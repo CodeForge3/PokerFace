@@ -55,3 +55,10 @@ nunit-*.xml
 
 # JetBrains
 .idea
+
+# Visual Studio
+.vscode
+.vs
+
+# User Specific
+*.user
