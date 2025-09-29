@@ -1,7 +1,10 @@
+using CodeForge3.PokerFace.Configurations;
 using MudBlazor.Services;
 using CodeForge3.PokerFace.WebApp.Components;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddConfiguration(PokerFaceConfiguration.ConfigurationRoot);
 
 builder.Services.AddMudServices();
 
