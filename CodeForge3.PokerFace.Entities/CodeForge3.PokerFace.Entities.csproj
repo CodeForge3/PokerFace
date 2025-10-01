@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\CodeForge3.PokerFace.Enums\CodeForge3.PokerFace.Enums.csproj" />
+  </ItemGroup>
+
+</Project>
