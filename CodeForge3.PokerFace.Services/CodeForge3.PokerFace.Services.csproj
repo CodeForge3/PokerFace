@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\CodeForge3.PokerFace.MachineLearning\CodeForge3.PokerFace.MachineLearning.csproj" />
+  </ItemGroup>
+
+</Project>
