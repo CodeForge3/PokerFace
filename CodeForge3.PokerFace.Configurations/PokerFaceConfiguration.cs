@@ -31,6 +31,16 @@ public static class PokerFaceConfiguration
     private const string AssemblyNotFoundMessage = "The 'CodeForge3.PokerFace.Configurations' " +
         "assembly could not be found.";
     
+    /// <summary>
+    /// The name of the current Yolo model in the configuration file.
+    /// </summary>
+    private const string CurrentYoloModelName = "CurrentModels:Yolo";
+    
+    /// <summary>
+    /// The message returned when a key is not found in the configuration file.
+    /// </summary>
+    private const string KeyNotFoundMessage = "The key '{0}' could not be found in the configuration file.";
+    
     #endregion
     
     #region Constructor
@@ -78,6 +88,30 @@ public static class PokerFaceConfiguration
     /// The application root configuration.
     /// </summary>
     public static IConfigurationRoot ConfigurationRoot { get; }
+    
+    /// <summary>
+    /// The current Yolo model.
+    /// </summary>
+    /// <exception cref="KeyNotFoundException">
+    /// If the key could not be found in the configuration file.
+    /// </exception>
+    public static string CurrentYoloModel => ConfigurationRoot[CurrentYoloModelName]
+        ?? throw CreateKeyNotFoundException(CurrentYoloModelName);
+    
+    #endregion
+    
+    #region CreateKeyNotFoundException
+    
+    /// <summary>
+    /// Creates a new <see cref="KeyNotFoundException" /> instance.
+    /// </summary>
+    /// <param name="key">The name of the missing key.</param>
+    /// <returns>The constructed <see cref="KeyNotFoundException" /> instance.</returns>
+    private static KeyNotFoundException CreateKeyNotFoundException(string key)
+    {
+        string message = string.Format(KeyNotFoundMessage, key);
+        return new KeyNotFoundException(message);
+    }
     
     #endregion
 }
