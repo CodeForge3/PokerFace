@@ -5,4 +5,10 @@
     <PackageReference Include="YoloSharp" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Models\*.onnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
