@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Settings", "Settings", "{C5
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
+		.gitattributes = .gitattributes
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeForge3.PokerFace.Configurations", "CodeForge3.PokerFace.Configurations\CodeForge3.PokerFace.Configurations.csproj", "{58DD47B4-BAFC-4CBF-8F69-7B11484C1100}"
