@@ -1,5 +1,7 @@
-﻿using CodeForge3.PokerFace.MachineLearning.Interfaces;
+﻿using CodeForge3.PokerFace.Entities;
+using CodeForge3.PokerFace.MachineLearning.Interfaces;
 using CodeForge3.PokerFace.Services.Interfaces;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
 
 namespace CodeForge3.PokerFace.Services.Implementations;
@@ -35,6 +37,32 @@ public sealed class PokerAppService
     {
         _logger = logger;
         _yoloDetectionHandler = yoloDetectionHandler;
+    }
+    
+    #endregion
+    
+    #region PredictCards
+    
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<CardPrediction>> PredictCardsAsync(IBrowserFile? file)
+    {
+        _logger.LogDebug("Starting card prediction.");
+        
+        if (file == null)
+        {
+            _logger.LogWarning("The file is null.");
+            throw new ArgumentNullException(nameof(file));
+        }
+        
+        await using Stream stream = file.OpenReadStream(maxAllowedSize: 10485760); // TODO: Add this to the configuration.
+        using MemoryStream ms = new();
+        await stream.CopyToAsync(ms);
+        byte[] imageBytes = ms.ToArray();
+        
+        IReadOnlyList<CardPrediction> predictions = await _yoloDetectionHandler.DetectAsync(imageBytes);
+        
+        _logger.LogInformation("Card prediction completed.");
+        return predictions;
     }
     
     #endregion

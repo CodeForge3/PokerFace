@@ -1,9 +1,20 @@
-﻿namespace CodeForge3.PokerFace.Services.Interfaces;
+﻿using CodeForge3.PokerFace.Entities;
+using Microsoft.AspNetCore.Components.Forms;
+
+namespace CodeForge3.PokerFace.Services.Interfaces;
 
 /// <summary>
 /// Defines the main application service.
 /// </summary>
 public interface IPokerAppService
 {
-    
+    /// <summary>
+    /// Predicts the cards in the uploaded image.
+    /// </summary>
+    /// <param name="file">The uploaded image file.</param>
+    /// <returns>The list of predicted cards.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// If the uploaded image file is <see langword="null" />.
+    /// </exception>
+    Task<IReadOnlyList<CardPrediction>> PredictCardsAsync(IBrowserFile? file);
 }
