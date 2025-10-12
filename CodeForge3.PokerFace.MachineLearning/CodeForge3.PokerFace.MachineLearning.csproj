@@ -11,4 +11,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CodeForge3.PokerFace.Entities\CodeForge3.PokerFace.Entities.csproj" />
+  </ItemGroup>
+
 </Project>
