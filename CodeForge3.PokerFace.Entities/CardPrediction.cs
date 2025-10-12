@@ -25,12 +25,12 @@ public readonly struct CardPrediction
     /// <summary>
     /// The card predicted.
     /// </summary>
-    private Card Card { get; }
+    public Card Card { get; }
     
     /// <summary>
     /// The probability of the prediction being correct.
     /// </summary>
-    private float Probability { get; }
+    public float Probability { get; }
     
     #endregion
     
