@@ -3,6 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="9.0.9" />
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.9" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.9" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />

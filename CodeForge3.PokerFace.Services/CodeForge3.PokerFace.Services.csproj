@@ -4,4 +4,8 @@
     <ProjectReference Include="..\CodeForge3.PokerFace.MachineLearning\CodeForge3.PokerFace.MachineLearning.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+  </ItemGroup>
+
 </Project>
