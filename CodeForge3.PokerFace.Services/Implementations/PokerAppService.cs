@@ -1,4 +1,5 @@
-﻿using CodeForge3.PokerFace.Entities;
+﻿using CodeForge3.PokerFace.Configurations;
+using CodeForge3.PokerFace.Entities;
 using CodeForge3.PokerFace.MachineLearning.Interfaces;
 using CodeForge3.PokerFace.Services.Interfaces;
 using Microsoft.AspNetCore.Components.Forms;
@@ -54,7 +55,7 @@ public sealed class PokerAppService
             throw new ArgumentNullException(nameof(file));
         }
         
-        await using Stream stream = file.OpenReadStream(maxAllowedSize: 10485760); // TODO: Add this to the configuration.
+        await using Stream stream = file.OpenReadStream(PokerFaceConfiguration.MaxUploadFileSize);
         using MemoryStream ms = new();
         await stream.CopyToAsync(ms);
         byte[] imageBytes = ms.ToArray();

@@ -5,7 +5,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CodeForge3.PokerFace.Configurations\CodeForge3.PokerFace.Configurations.csproj" />
     <ProjectReference Include="..\CodeForge3.PokerFace.Services\CodeForge3.PokerFace.Services.csproj" />
   </ItemGroup>
 

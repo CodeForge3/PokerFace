@@ -41,6 +41,11 @@ public static class PokerFaceConfiguration
     /// </summary>
     private const string KeyNotFoundMessage = "The key '{0}' could not be found in the configuration file.";
     
+    /// <summary>
+    /// The name of the max upload file size in bytes in the configuration file.
+    /// </summary>
+    private const string MaxUploadFileSizeName = "Upload:MaxFileSize";
+    
     #endregion
     
     #region Constructor
@@ -97,6 +102,15 @@ public static class PokerFaceConfiguration
     /// </exception>
     public static string CurrentYoloModel => ConfigurationRoot[CurrentYoloModelName]
         ?? throw CreateKeyNotFoundException(CurrentYoloModelName);
+    
+    /// <summary>
+    /// The max upload file size in bytes.
+    /// </summary>
+    /// <exception cref="KeyNotFoundException">
+    /// If the key could not be found in the configuration file.
+    /// </exception>
+    public static long MaxUploadFileSize => long.TryParse(ConfigurationRoot[MaxUploadFileSizeName],
+        out long value) ? value : throw CreateKeyNotFoundException(MaxUploadFileSizeName);
     
     #endregion
     
