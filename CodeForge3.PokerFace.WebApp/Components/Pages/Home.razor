@@ -1,0 +1,106 @@
+﻿@page "/"
+@inject IPokerAppService PokerAppService
+
+<PageTitle>Home</PageTitle>
+
+<MudPaper Class="mt-4 pa-6">
+    <MudText Typo="Typo.h5" GutterBottom="true">Upload a poker card image.</MudText>
+    <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg" FilesChanged="OnFileSelected">
+        <ActivatorContent>
+            <MudFab Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Image" Label="Load picture" />
+        </ActivatorContent>
+        <SelectedTemplate>
+            @if (context != null)
+            {
+                <MudText Class="mt-2">@context.Name</MudText>
+            }
+            else
+            {
+                <MudText Class="mt-2">No File</MudText>
+            }
+        </SelectedTemplate>
+    </MudFileUpload>
+    <MudButton Disabled="@(_selectedFile is null || _isProcessing)" OnClick="@(() => ProcessFile())"
+        Color="Color.Primary" Variant="Variant.Filled" Class="mt-2">
+        @if (_isProcessing)
+        {
+            <MudProgressCircular Indeterminate="true" Size="Size.Small" Class="mr-2" />
+            <MudText>Processing...</MudText>
+        }
+        else
+        {
+            <MudText>Process Image</MudText>
+        }
+    </MudButton>
+</MudPaper>
+
+@if (_predictions is not null)
+{
+    <MudPaper Class="mt-4 pa-6">
+        @if (_predictions.Count > 0)
+        {
+            <MudText Typo="Typo.h6">Detected Cards</MudText>
+            <MudTable Items="_predictions" Dense="true" Hover="true" Elevation="0">
+                <HeaderContent>
+                    <MudTh>Rank</MudTh>
+                    <MudTh>Suit</MudTh>
+                    <MudTh>Confidence</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Rank">@context.Card.Rank</MudTd>
+                    <MudTd DataLabel="Suit">@context.Card.Suit</MudTd>
+                    <MudTd DataLabel="Confidence">@context.Probability.ToString("P1")</MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+        else
+        {
+            <MudText Color="Color.Warning">
+                No cards detected in the image.
+            </MudText>
+        }
+    </MudPaper>
+}
+
+@code
+{
+    /// <summary>
+    /// Is the image being processed?
+    /// </summary>
+    private bool _isProcessing;
+    
+    /// <summary>
+    /// The predictions for the current image.
+    /// </summary>
+    private IReadOnlyList<CardPrediction>? _predictions;
+    
+    /// <summary>
+    /// The currently selected file.
+    /// </summary>
+    private IBrowserFile? _selectedFile;
+    
+    /// <summary>
+    /// Selects the image to upload to the server for processing.
+    /// </summary>
+    /// <param name="file">The file to upload.</param>
+    private void OnFileSelected(IBrowserFile? file)
+    {
+        _selectedFile = file;
+        _predictions = null;
+    }
+    
+    /// <summary>
+    /// Processes the uploaded image.
+    /// </summary>
+    private async Task ProcessFile()
+    {
+        if (_selectedFile is null)
+        {
+            return;
+        }
+        
+        _isProcessing = true;
+        _predictions = await PokerAppService.PredictCardsAsync(_selectedFile);
+        _isProcessing = false;
+    }
+}

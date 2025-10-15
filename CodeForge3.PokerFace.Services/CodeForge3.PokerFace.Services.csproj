@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\CodeForge3.PokerFace.Configurations\CodeForge3.PokerFace.Configurations.csproj" />
+    <ProjectReference Include="..\CodeForge3.PokerFace.MachineLearning\CodeForge3.PokerFace.MachineLearning.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+  </ItemGroup>
+
+</Project>

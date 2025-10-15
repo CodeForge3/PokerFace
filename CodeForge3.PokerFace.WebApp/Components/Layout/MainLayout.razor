@@ -7,17 +7,12 @@
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(() => DrawerToggle())"/>
-        <MudText Typo="Typo.h5" Class="ml-3">
+        <MudText Typo="Typo.h5">
             Poker Face
         </MudText>
         <MudSpacer/>
-        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End"/>
+        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" Edge="Edge.End" OnClick="@DarkModeToggle"/>
     </MudAppBar>
-    <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu/>
-    </MudDrawer>
     <MudMainContent Class="pt-16 pa-4">
         @Body
     </MudMainContent>
@@ -33,8 +28,6 @@
 
 @code
 {
-    private bool _drawerOpen = true;
-    
     private bool _isDarkMode = true;
     
     private MudTheme? _theme;
@@ -49,11 +42,6 @@
             PaletteDark = _darkPalette,
             LayoutProperties = new()
         };
-    }
-    
-    private void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
     }
     
     private void DarkModeToggle()
@@ -100,9 +88,9 @@
         OverlayLight = "#1e1e2d80",
     };
     
-    public string DarkLightModeButtonIcon => _isDarkMode switch
+    private string DarkLightModeButtonIcon => _isDarkMode switch
     {
-        true => Icons.Material.Rounded.AutoMode,
+        true => Icons.Material.Rounded.LightMode,
         false => Icons.Material.Outlined.DarkMode,
     };
 }
