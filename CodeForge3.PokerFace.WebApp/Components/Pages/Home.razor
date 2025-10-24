@@ -63,6 +63,13 @@
     </MudPaper>
 }
 
+<!-- Button created only for testing the card evaluation. -->
+<MudPaper Class="mt-4 pa-6">
+    <MudButton OnClick="@(() => testEvaluatingCards())" Color="Color.Primary" Variant="Variant.Filled" Class="mt-2">
+        <MudText>Evaluate cards</MudText>
+    </MudButton>
+</MudPaper>
+
 @if (_evaluatedCombination is not null)
 {
     <MudPaper Class="mt-4 pa-6">
@@ -137,33 +144,38 @@
             return;
         }
 
-        /*if (_predictions.Count != 5)
+        if (_predictions.Count != 5)
         {
             Console.WriteLine($"Error: predicted cards count is not 5. (Cards cound is: {_predictions.Count})");
             return;
-        }*/
+        }
 
         _isEvaluating = true;
 
-        /*Only for test with five cards*/
-        var card1 = new Card(Enums.ECardRank.Ten, Enums.ECardSuit.Diamonds);
-        var card2 = new Card(Enums.ECardRank.Jack, Enums.ECardSuit.Diamonds);
-        var card3 = new Card(Enums.ECardRank.Queen, Enums.ECardSuit.Diamonds);
-        var card4 = new Card(Enums.ECardRank.King, Enums.ECardSuit.Diamonds);
-        var card5 = new Card(Enums.ECardRank.Nine, Enums.ECardSuit.Diamonds);
-        var test_predictions = new List<CardPrediction> {
-            new CardPrediction(card1, (float)0.999),
-            new CardPrediction(card2, (float) 0.999),
-            new CardPrediction(card3, (float) 0.999),
-            new CardPrediction(card4, (float) 0.999),
-            new CardPrediction(card5, (float)0.999)
-        }.AsReadOnly();
-
         _evaluatedCombination = await Task.Run(() =>
-            PokerHandEvaluatorService.EvaluateCombination(test_predictions.Select(p => p.Card).ToList())
-            // PokerHandEvaluatorService.EvaluateCombination(_predictions)
+            PokerHandEvaluatorService.EvaluateCombination(_predictions.Select(p => p.Card).ToList())
         );
 
         _isEvaluating = false;
+    }
+
+    // Only test for evaluating the cards without uploading pictures eachtime. (Until the card detector corrected.)
+    private void testEvaluatingCards()
+    {
+        var card1 = new Card(Enums.ECardRank.Queen, Enums.ECardSuit.Diamonds);
+        var card2 = new Card(Enums.ECardRank.King, Enums.ECardSuit.Diamonds);
+        var card3 = new Card(Enums.ECardRank.Five, Enums.ECardSuit.Diamonds);
+        var card4 = new Card(Enums.ECardRank.Seven, Enums.ECardSuit.Diamonds);
+        var card5 = new Card(Enums.ECardRank.Three, Enums.ECardSuit.Diamonds);
+
+        var test_cards = new List<Card> {
+            card1,
+            card2,
+            card3,
+            card4,
+            card5
+        }.AsReadOnly();
+
+        _evaluatedCombination = PokerHandEvaluatorService.EvaluateCombination(test_cards);
     }
 }
