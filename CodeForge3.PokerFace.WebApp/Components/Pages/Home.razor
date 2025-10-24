@@ -65,9 +65,11 @@
 
 @if (_evaluatedCombination is not null)
 {
-    <MudText Typo="Typo.h6">
-        The combination of the detected cards is @_evaluatedCombination.
-    </MudText>
+    <MudPaper Class="mt-4 pa-6">
+        <MudText Typo="Typo.h6" Align="Align.Center">
+            The combination of the detected cards is <span style="text-decoration: underline;">@_evaluatedCombination</span>.
+        </MudText>
+    </MudPaper>
 }
 
 @code
