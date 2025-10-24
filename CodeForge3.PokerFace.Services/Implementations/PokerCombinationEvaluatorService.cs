@@ -38,7 +38,7 @@ public class PokerCombinationEvaluatorService : IPokerCombinationEvaluatorServic
     public string EvaluateCombination(IReadOnlyList<Card> cards)
     {
         if (cards.Count != 5)
-            throw new ArgumentException("Prediction must have exactly 5 cards.");
+            throw new ArgumentOutOfRangeException($"Card evauation requires exactly 5 cards. Got: {cards.Count}.");
 
 
         var rankCounts = Enum.GetValues<ECardRank>().ToDictionary(r => r, _ => 0);
