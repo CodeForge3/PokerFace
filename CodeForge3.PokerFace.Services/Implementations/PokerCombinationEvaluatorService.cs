@@ -29,12 +29,8 @@ public class PokerCombinationEvaluatorService : IPokerCombinationEvaluatorServic
         if (cardPredictions.Count != 5)
             throw new ArgumentException("Prediction must have exactly 5 cards.");
 
-        List<Card> cards = [];
-        foreach (var cardPrediction in cardPredictions)
-        {
-            cards.Add(cardPrediction.Card);
-            _logger.LogInformation($"-{cardPrediction.Card}-");
-        }
+
+        List<Card> cards = cardPredictions.Select(p => p.Card).ToList();
 
         var rankCounts = Enum.GetValues<ECardRank>().ToDictionary(r => r, _ => 0);
         var suitCounts = Enum.GetValues<ECardSuit>().ToDictionary(s => s, _ => 0);
@@ -47,35 +43,21 @@ public class PokerCombinationEvaluatorService : IPokerCombinationEvaluatorServic
             rankMask |= 1 << ((int)card.Rank - 2); // -2 is because of the Enum Rank Two, which is the first element starts at 2.
         }
 
-        bool flush = false;
-        foreach (var (_, count) in suitCounts)
-            if (count == 5)
-                flush = true;
 
-        bool straight = false;
-        for (var shift = 0; shift <= 8; shift++)
-        {
-            var straightBitMask = 0b11111 << shift;
-            if ((rankMask & straightBitMask) == straightBitMask)
-            {
-                straight = true;
-                break;
-            }
-        }
+        bool flush = suitCounts.Values.Any(c => c == 5);
+
+
+        var straightBitMask = 0b11111;
+        bool straight = Enumerable.Range(0, 9).Any(shift => ((rankMask >> shift) & straightBitMask) == straightBitMask);
 
         var lowAceStraightBitMask = 0b1000000001111; // (A-2-3-4-5)
         if (!straight && (rankMask & lowAceStraightBitMask) == lowAceStraightBitMask)
             straight = true;
 
-        int four = 0;
-        int three = 0;
-        int pairs = 0;
-        foreach (var (_, count) in rankCounts)
-        {
-            if (count == 4) { four++; }
-            if (count == 3) { three++; }
-            if (count == 2) { pairs++; }
-        }
+
+        int four = rankCounts.Values.Count(c => c == 4);
+        int three = rankCounts.Values.Count(c => c == 3);
+        int pairs = rankCounts.Values.Count(c => c == 2);
 
 
         if (straight && flush)
