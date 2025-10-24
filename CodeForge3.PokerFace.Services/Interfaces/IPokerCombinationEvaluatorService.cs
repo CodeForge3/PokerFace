@@ -3,7 +3,7 @@
 namespace CodeForge3.PokerFace.Services.Interfaces;
 
 /// <summary>
-/// Defines the poker hand evaluation of five cards service.
+/// Defines the service of the combination evaluator.
 /// </summary>
 public interface IPokerCombinationEvaluatorService
 {
@@ -11,6 +11,9 @@ public interface IPokerCombinationEvaluatorService
     /// Evaluate the given cards as a poker combination.
     /// </summary>
     /// <param name="cards">List of the cards.</param>
-    /// <returns>The strongest card combination of the cards.</returns>
+    /// <returns>String representation of the strongest card combination of the cards.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// If not exactly five cards given. />.
+    /// </exception>
     string EvaluateCombination(IReadOnlyList<Card> cards);
 }
