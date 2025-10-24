@@ -135,16 +135,31 @@
             return;
         }
 
-        if (_predictions.Count != 5)
+        /*if (_predictions.Count != 5)
         {
             Console.WriteLine($"Error: predicted cards count is not 5. (Cards cound is: {_predictions.Count})");
             return;
-        }
+        }*/
 
         _isEvaluating = true;
 
+        /*Only for test with five cards*/
+        var card1 = new Card(Enums.ECardRank.Ten, Enums.ECardSuit.Diamonds);
+        var card2 = new Card(Enums.ECardRank.Jack, Enums.ECardSuit.Diamonds);
+        var card3 = new Card(Enums.ECardRank.Queen, Enums.ECardSuit.Diamonds);
+        var card4 = new Card(Enums.ECardRank.King, Enums.ECardSuit.Diamonds);
+        var card5 = new Card(Enums.ECardRank.Ace, Enums.ECardSuit.Diamonds);
+        var test_predictions = new List<CardPrediction> {
+            new CardPrediction(card1, (float)0.999),
+            new CardPrediction(card2, (float) 0.999),
+            new CardPrediction(card3, (float) 0.999),
+            new CardPrediction(card4, (float) 0.999),
+            new CardPrediction(card5, (float)0.999)
+        }.AsReadOnly();
+
         _evaluatedCombination = await Task.Run(() =>
-            PokerHandEvaluatorService.EvaluateCombination(_predictions)
+            PokerHandEvaluatorService.EvaluateCombination(test_predictions)
+            // PokerHandEvaluatorService.EvaluateCombination(_predictions)
         );
 
         _isEvaluating = false;
