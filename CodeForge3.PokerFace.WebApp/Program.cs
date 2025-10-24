@@ -12,7 +12,7 @@ builder.Services.AddYoloDetectionHandler(PokerFaceConfiguration.CurrentYoloModel
 
 builder.Services.AddPokerAppService();
 
-builder.Services.AddPokerHandEvaluatorService();
+builder.Services.AddCardCombinationEvaluatorService();
 
 builder.Services.AddMudServices();
 

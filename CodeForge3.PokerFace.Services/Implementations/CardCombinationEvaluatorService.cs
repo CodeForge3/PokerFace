@@ -6,26 +6,26 @@ using Microsoft.Extensions.Logging;
 namespace CodeForge3.PokerFace.Services.Implementations;
 
 /// <summary>
-/// The implementation of the <see cref="IPokerCombinationEvaluatorService"/>.
+/// The implementation of the <see cref="ICardCombinationEvaluatorService"/>.
 /// </summary>
-public class PokerCombinationEvaluatorService : IPokerCombinationEvaluatorService
+public class CardCombinationEvaluatorService : ICardCombinationEvaluatorService
 {
     #region Fields
 
     /// <summary>
     /// The field containing the logger for the class.
     /// </summary>
-    private readonly ILogger<PokerCombinationEvaluatorService> _logger;
+    private readonly ILogger<CardCombinationEvaluatorService> _logger;
 
     #endregion
 
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PokerCombinationEvaluatorService"/> class.
+    /// Initializes a new instance of the <see cref="CardCombinationEvaluatorService"/> class.
     /// </summary>
     /// <param name="logger">The logger for the class.</param>
-    public PokerCombinationEvaluatorService(ILogger<PokerCombinationEvaluatorService> logger)
+    public CardCombinationEvaluatorService(ILogger<CardCombinationEvaluatorService> logger)
     {
         _logger = logger;
     }
