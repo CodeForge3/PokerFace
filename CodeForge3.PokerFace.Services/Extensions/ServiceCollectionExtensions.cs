@@ -20,4 +20,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPokerAppService, PokerAppService>();
         return services;
     }
+    public static IServiceCollection AddPokerHandEvaluatorService(this IServiceCollection services)
+    {
+        services.AddScoped<IPokerCombinationEvaluatorService, PokerCombinationEvaluatorService>();
+        return services;
+    }
 }

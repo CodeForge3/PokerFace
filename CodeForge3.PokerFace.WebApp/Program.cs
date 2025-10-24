@@ -12,6 +12,8 @@ builder.Services.AddYoloDetectionHandler(PokerFaceConfiguration.CurrentYoloModel
 
 builder.Services.AddPokerAppService();
 
+builder.Services.AddPokerHandEvaluatorService();
+
 builder.Services.AddMudServices();
 
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
