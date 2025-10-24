@@ -11,6 +11,6 @@ public interface IPokerCombinationEvaluatorService
     /// Evaluate the given cards as a poker combination.
     /// </summary>
     /// <param name="cards">List of the cards.</param>
-    /// <returns>The strongest poker combination of the cards.</returns>
-    string EvaluateCombination(IReadOnlyList<CardPrediction> cardPredictions);
+    /// <returns>The strongest card combination of the cards.</returns>
+    string EvaluateCombination(IReadOnlyList<Card> cards);
 }

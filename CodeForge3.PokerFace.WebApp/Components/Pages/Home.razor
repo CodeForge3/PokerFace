@@ -125,7 +125,7 @@
     }
 
     /// <summary>
-    /// Evaluates the given hand
+    /// Evaluates the combination of the predicted cards.
     /// </summary>
     private async Task EvaluateCardsCombination()
     {
@@ -148,7 +148,7 @@
         var card2 = new Card(Enums.ECardRank.Jack, Enums.ECardSuit.Diamonds);
         var card3 = new Card(Enums.ECardRank.Queen, Enums.ECardSuit.Diamonds);
         var card4 = new Card(Enums.ECardRank.King, Enums.ECardSuit.Diamonds);
-        var card5 = new Card(Enums.ECardRank.Ace, Enums.ECardSuit.Diamonds);
+        var card5 = new Card(Enums.ECardRank.Nine, Enums.ECardSuit.Diamonds);
         var test_predictions = new List<CardPrediction> {
             new CardPrediction(card1, (float)0.999),
             new CardPrediction(card2, (float) 0.999),
@@ -158,7 +158,7 @@
         }.AsReadOnly();
 
         _evaluatedCombination = await Task.Run(() =>
-            PokerHandEvaluatorService.EvaluateCombination(test_predictions)
+            PokerHandEvaluatorService.EvaluateCombination(test_predictions.Select(p => p.Card).ToList())
             // PokerHandEvaluatorService.EvaluateCombination(_predictions)
         );
 

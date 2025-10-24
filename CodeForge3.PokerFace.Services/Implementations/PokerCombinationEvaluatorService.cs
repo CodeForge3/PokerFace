@@ -10,10 +10,16 @@ namespace CodeForge3.PokerFace.Services.Implementations;
 /// </summary>
 public class PokerCombinationEvaluatorService : IPokerCombinationEvaluatorService
 {
+    #region Fields
+
     /// <summary>
     /// The field containing the logger for the class.
     /// </summary>
     private readonly ILogger<PokerCombinationEvaluatorService> _logger;
+
+    #endregion
+
+    #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PokerCombinationEvaluatorService"/> class.
@@ -24,13 +30,16 @@ public class PokerCombinationEvaluatorService : IPokerCombinationEvaluatorServic
         _logger = logger;
     }
 
-    public string EvaluateCombination(IReadOnlyList<CardPrediction> cardPredictions)
+    #endregion
+
+    #region Evaluate
+
+    /// inheritdoc />
+    public string EvaluateCombination(IReadOnlyList<Card> cards)
     {
-        if (cardPredictions.Count != 5)
+        if (cards.Count != 5)
             throw new ArgumentException("Prediction must have exactly 5 cards.");
 
-
-        List<Card> cards = cardPredictions.Select(p => p.Card).ToList();
 
         var rankCounts = Enum.GetValues<ECardRank>().ToDictionary(r => r, _ => 0);
         var suitCounts = Enum.GetValues<ECardSuit>().ToDictionary(s => s, _ => 0);
@@ -85,5 +94,7 @@ public class PokerCombinationEvaluatorService : IPokerCombinationEvaluatorServic
 
         return "High Card";
     }
+
+    #endregion
 }
 
