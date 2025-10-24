@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inject IPokerAppService PokerAppService
+@inject IPokerCombinationEvaluatorService PokerHandEvaluatorService
 
 <PageTitle>Home</PageTitle>
 
@@ -20,9 +21,9 @@
             }
         </SelectedTemplate>
     </MudFileUpload>
-    <MudButton Disabled="@(_selectedFile is null || _isProcessing)" OnClick="@(() => ProcessFile())"
+    <MudButton Disabled="@(_selectedFile is null || _isProcessing ||_isEvaluating)" OnClick="@(() => ProcessFile())"
         Color="Color.Primary" Variant="Variant.Filled" Class="mt-2">
-        @if (_isProcessing)
+        @if (_isProcessing || _isEvaluating)
         {
             <MudProgressCircular Indeterminate="true" Size="Size.Small" Class="mr-2" />
             <MudText>Processing...</MudText>
@@ -62,23 +63,40 @@
     </MudPaper>
 }
 
+@if (_evaluatedCombination is not null)
+{
+    <MudText Typo="Typo.h6">
+        The combination of the detected cards is @_evaluatedCombination.
+    </MudText>
+}
+
 @code
 {
     /// <summary>
     /// Is the image being processed?
     /// </summary>
     private bool _isProcessing;
-    
+
+    /// <summary>
+    /// Is the cards being evaluated?
+    /// </summary>
+    private bool _isEvaluating;
+
     /// <summary>
     /// The predictions for the current image.
     /// </summary>
     private IReadOnlyList<CardPrediction>? _predictions;
-    
+
     /// <summary>
     /// The currently selected file.
     /// </summary>
     private IBrowserFile? _selectedFile;
-    
+
+    /// <summary>
+    /// The evaluated poker combination of the predicted five cards.
+    /// </summary>
+    private string? _evaluatedCombination;
+
     /// <summary>
     /// Selects the image to upload to the server for processing.
     /// </summary>
@@ -88,7 +106,7 @@
         _selectedFile = file;
         _predictions = null;
     }
-    
+
     /// <summary>
     /// Processes the uploaded image.
     /// </summary>
@@ -98,9 +116,37 @@
         {
             return;
         }
-        
+
         _isProcessing = true;
         _predictions = await PokerAppService.PredictCardsAsync(_selectedFile);
         _isProcessing = false;
+
+        await EvaluateCardsCombination();
+    }
+
+    /// <summary>
+    /// Evaluates the given hand
+    /// </summary>
+    private async Task EvaluateCardsCombination()
+    {
+        if (_predictions is null)
+        {
+            Console.WriteLine("Error: predictions empty.");
+            return;
+        }
+
+        if (_predictions.Count != 5)
+        {
+            Console.WriteLine($"Error: predicted cards count is not 5. (Cards cound is: {_predictions.Count})");
+            return;
+        }
+
+        _isEvaluating = true;
+
+        _evaluatedCombination = await Task.Run(() =>
+            PokerHandEvaluatorService.EvaluateCombination(_predictions)
+        );
+
+        _isEvaluating = false;
     }
 }
