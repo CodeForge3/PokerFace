@@ -63,13 +63,6 @@
     </MudPaper>
 }
 
-<!-- Button created only for testing the card evaluation. -->
-<MudPaper Class="mt-4 pa-6">
-    <MudButton OnClick="@(() => testEvaluateCardsCombination())" Color="Color.Primary" Variant="Variant.Filled" Class="mt-2">
-        <MudText>Evaluate cards</MudText>
-    </MudButton>
-</MudPaper>
-
 @if (_evaluatedCombination is not null)
 {
     <MudPaper Class="mt-4 pa-6">
@@ -157,25 +150,5 @@
         );
 
         _isEvaluating = false;
-    }
-
-    // Only test for evaluating the cards without uploading pictures eachtime. (Until the card detector corrected.)
-    private void testEvaluateCardsCombination()
-    {
-        var card1 = new Card(Enums.ECardRank.Queen, Enums.ECardSuit.Diamonds);
-        var card2 = new Card(Enums.ECardRank.King, Enums.ECardSuit.Diamonds);
-        var card3 = new Card(Enums.ECardRank.Ten, Enums.ECardSuit.Diamonds);
-        var card4 = new Card(Enums.ECardRank.Jack, Enums.ECardSuit.Diamonds);
-        var card5 = new Card(Enums.ECardRank.Ace, Enums.ECardSuit.Diamonds);
-
-        var test_cards = new List<Card> {
-            card1,
-            card2,
-            card3,
-            card4,
-            card5
-        }.AsReadOnly();
-
-        _evaluatedCombination = PokerAppService.EvaluateCombination(test_cards);
     }
 }
