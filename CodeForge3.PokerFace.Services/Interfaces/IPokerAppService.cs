@@ -1,4 +1,5 @@
 ﻿using CodeForge3.PokerFace.Entities;
+using CodeForge3.PokerFace.Enums;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace CodeForge3.PokerFace.Services.Interfaces;
@@ -22,9 +23,9 @@ public interface IPokerAppService
     /// Evaluate the given cards as a poker card combination.
     /// </summary>
     /// <param name="cards">List of the cards.</param>
-    /// <returns>String representation of the strongest card combination of the cards.</returns>
+    /// <returns>Enumeration of the strongest card combination of the cards.</returns>
     /// <exception cref="ArgumentOutOfRangeException">
     /// If not exactly five cards given. />.
     /// </exception>
-    string EvaluateCombination(IReadOnlyList<Card> cards);
+    ECardCombination EvaluateCombination(IReadOnlyList<Card> cards);
 }

@@ -72,7 +72,7 @@ public sealed class PokerAppService
     #region Evaluate
 
     /// inheritdoc />
-    public string EvaluateCombination(IReadOnlyList<Card> cards)
+    public ECardCombination EvaluateCombination(IReadOnlyList<Card> cards)
     {
         if (cards.Count != 5)
             throw new ArgumentOutOfRangeException($"Card evauation requires exactly 5 cards. Got: {cards.Count}.");
@@ -110,26 +110,26 @@ public sealed class PokerAppService
         {
             var royalFlushBitMask = 0b1111100000000;
             if ((rankMask & royalFlushBitMask) == royalFlushBitMask)
-                return "Royal Flush";
+                return ECardCombination.RoyalFlush;
 
-            return "Straight Flush";
+            return ECardCombination.StraightFlush;
         }
 
-        if (four == 1) { return "Four of a kind"; }
+        if (four == 1) { return ECardCombination.FourOfAKind; }
 
-        if (three == 1 && pairs == 1) { return "Full House"; }
+        if (three == 1 && pairs == 1) { return ECardCombination.FullHouse; }
 
-        if (flush) { return "Flush"; }
+        if (flush) { return ECardCombination.Flush; }
 
-        if (straight) { return "Straight"; }
+        if (straight) { return ECardCombination.Straight; }
 
-        if (three == 1) { return "Three of a kind"; }
+        if (three == 1) { return ECardCombination.ThreeOfAKind; }
 
-        if (pairs == 2) { return "Two Pair"; }
+        if (pairs == 2) { return ECardCombination.TwoPair; }
 
-        if (pairs == 1) { return "Pair"; }
+        if (pairs == 1) { return ECardCombination.Pair; }
 
-        return "High Card";
+        return ECardCombination.HighCard;
     }
 
     #endregion

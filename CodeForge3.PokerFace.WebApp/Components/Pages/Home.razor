@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using CodeForge3.PokerFace.Enums.Extensions
 @inject IPokerAppService PokerAppService
 
 <PageTitle>Home</PageTitle>
@@ -64,7 +65,7 @@
 
 <!-- Button created only for testing the card evaluation. -->
 <MudPaper Class="mt-4 pa-6">
-    <MudButton OnClick="@(() => testEvaluatingCards())" Color="Color.Primary" Variant="Variant.Filled" Class="mt-2">
+    <MudButton OnClick="@(() => testEvaluateCardsCombination())" Color="Color.Primary" Variant="Variant.Filled" Class="mt-2">
         <MudText>Evaluate cards</MudText>
     </MudButton>
 </MudPaper>
@@ -73,7 +74,7 @@
 {
     <MudPaper Class="mt-4 pa-6">
         <MudText Typo="Typo.h6" Align="Align.Center">
-            The combination of the detected cards is <span style="text-decoration: underline;">@_evaluatedCombination</span>.
+            The combination of the detected cards is <span style="text-decoration: underline;">@_evaluatedCombination.GetDisplayName()</span>.
         </MudText>
     </MudPaper>
 }
@@ -103,7 +104,7 @@
     /// <summary>
     /// The evaluated card combination of the predicted cards.
     /// </summary>
-    private string? _evaluatedCombination;
+    private Enums.ECardCombination? _evaluatedCombination;
 
     /// <summary>
     /// Selects the image to upload to the server for processing.
@@ -163,9 +164,9 @@
     {
         var card1 = new Card(Enums.ECardRank.Queen, Enums.ECardSuit.Diamonds);
         var card2 = new Card(Enums.ECardRank.King, Enums.ECardSuit.Diamonds);
-        var card3 = new Card(Enums.ECardRank.Five, Enums.ECardSuit.Diamonds);
-        var card4 = new Card(Enums.ECardRank.Seven, Enums.ECardSuit.Diamonds);
-        var card5 = new Card(Enums.ECardRank.Three, Enums.ECardSuit.Diamonds);
+        var card3 = new Card(Enums.ECardRank.Ten, Enums.ECardSuit.Diamonds);
+        var card4 = new Card(Enums.ECardRank.Jack, Enums.ECardSuit.Diamonds);
+        var card5 = new Card(Enums.ECardRank.Ace, Enums.ECardSuit.Diamonds);
 
         var test_cards = new List<Card> {
             card1,
