@@ -17,4 +17,14 @@ public interface IPokerAppService
     /// If the uploaded image file is <see langword="null" />.
     /// </exception>
     Task<IReadOnlyList<CardPrediction>> PredictCardsAsync(IBrowserFile? file);
+
+    /// <summary>
+    /// Evaluate the given cards as a poker card combination.
+    /// </summary>
+    /// <param name="cards">List of the cards.</param>
+    /// <returns>String representation of the strongest card combination of the cards.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// If not exactly five cards given. />.
+    /// </exception>
+    string EvaluateCombination(IReadOnlyList<Card> cards);
 }

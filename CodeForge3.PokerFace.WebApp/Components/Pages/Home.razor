@@ -1,6 +1,5 @@
 ﻿@page "/"
 @inject IPokerAppService PokerAppService
-@inject ICardCombinationEvaluatorService PokerHandEvaluatorService
 
 <PageTitle>Home</PageTitle>
 
@@ -153,14 +152,14 @@
         _isEvaluating = true;
 
         _evaluatedCombination = await Task.Run(() =>
-            PokerHandEvaluatorService.EvaluateCombination(_predictions.Select(p => p.Card).ToList())
+            PokerAppService.EvaluateCombination(_predictions.Select(p => p.Card).ToList())
         );
 
         _isEvaluating = false;
     }
 
     // Only test for evaluating the cards without uploading pictures eachtime. (Until the card detector corrected.)
-    private void testEvaluatingCards()
+    private void testEvaluateCardsCombination()
     {
         var card1 = new Card(Enums.ECardRank.Queen, Enums.ECardSuit.Diamonds);
         var card2 = new Card(Enums.ECardRank.King, Enums.ECardSuit.Diamonds);
@@ -176,6 +175,6 @@
             card5
         }.AsReadOnly();
 
-        _evaluatedCombination = PokerHandEvaluatorService.EvaluateCombination(test_cards);
+        _evaluatedCombination = PokerAppService.EvaluateCombination(test_cards);
     }
 }
