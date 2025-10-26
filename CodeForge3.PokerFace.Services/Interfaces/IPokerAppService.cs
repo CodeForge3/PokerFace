@@ -1,4 +1,5 @@
 ﻿using CodeForge3.PokerFace.Entities;
+using CodeForge3.PokerFace.Enums;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace CodeForge3.PokerFace.Services.Interfaces;
@@ -17,4 +18,14 @@ public interface IPokerAppService
     /// If the uploaded image file is <see langword="null" />.
     /// </exception>
     Task<IReadOnlyList<CardPrediction>> PredictCardsAsync(IBrowserFile? file);
+
+    /// <summary>
+    /// Evaluate the given cards as a poker card combination.
+    /// </summary>
+    /// <param name="cards">List of the cards.</param>
+    /// <returns>Enumeration of the strongest card combination of the cards.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// If not exactly five cards given. />.
+    /// </exception>
+    ECardCombination EvaluateCombination(IReadOnlyList<Card> cards);
 }
