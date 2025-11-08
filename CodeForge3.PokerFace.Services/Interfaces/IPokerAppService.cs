@@ -24,8 +24,11 @@ public interface IPokerAppService
     /// </summary>
     /// <param name="cards">List of the cards.</param>
     /// <returns>Enumeration of the strongest card combination of the cards.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// If not exactly five cards given. />.
+    /// <exception cref="ArgumentException">
+    /// If more than five cards given.
+    /// </exception>
+    /// /// <exception cref="ArgumentException">
+    /// If two or more cards are the same.
     /// </exception>
     ECardCombination EvaluateCombination(IReadOnlyList<Card> cards);
 }

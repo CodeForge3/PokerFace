@@ -63,11 +63,19 @@
     </MudPaper>
 }
 
-@if (_evaluatedCombination is not null)
+@if (_evaluation_error_message is not null)
+{
+    <MudPaper Class="mt-4 pa-6">
+        <MudText Typo="Typo.h6" Color="Color.Error" Align="Align.Center">
+            @_evaluation_error_message
+        </MudText>
+    </MudPaper>
+}
+else if (_evaluatedCombination is not null)
 {
     <MudPaper Class="mt-4 pa-6">
         <MudText Typo="Typo.h6" Align="Align.Center">
-            The combination of the detected cards is <span style="text-decoration: underline;">@_evaluatedCombination.GetDisplayName()</span>.
+            Combination evaluation result: <span style="text-decoration: underline;">@_evaluatedCombination.GetDisplayName()</span>
         </MudText>
     </MudPaper>
 }
@@ -98,6 +106,11 @@
     /// The evaluated card combination of the predicted cards.
     /// </summary>
     private Enums.ECardCombination? _evaluatedCombination;
+
+    /// <summary>
+    /// Error message of combination evaluation. Occurs when more than five or duplicated cards are detected.
+    /// </summary>
+    private string? _evaluation_error_message;
 
     /// <summary>
     /// Selects the image to upload to the server for processing.
@@ -131,22 +144,31 @@
     /// </summary>
     private async Task EvaluateCardsCombination()
     {
+        _evaluation_error_message = null;
+        _evaluatedCombination = null;
+
         if (_predictions is null)
         {
             Console.WriteLine("Error: predictions empty.");
             return;
         }
 
-        if (_predictions.Count != 5)
-        {
-            Console.WriteLine($"Warning: predicted cards count is not 5. (Cards count: {_predictions.Count})");
-        }
-
         _isEvaluating = true;
 
-        _evaluatedCombination = await Task.Run(() =>
-            PokerAppService.EvaluateCombination(_predictions.Select(p => p.Card).ToList())
-        );
+        try
+        {
+            _evaluatedCombination = await Task.Run(() =>
+                PokerAppService.EvaluateCombination(_predictions.Select(p => p.Card).ToList())
+            );
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            _evaluation_error_message = e.Message;
+        }
+        catch (ArgumentException e)
+        {
+            _evaluation_error_message = e.Message;
+        }
 
         _isEvaluating = false;
     }
