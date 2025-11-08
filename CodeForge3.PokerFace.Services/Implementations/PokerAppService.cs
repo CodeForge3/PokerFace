@@ -74,10 +74,6 @@ public sealed class PokerAppService
     /// inheritdoc />
     public ECardCombination EvaluateCombination(IReadOnlyList<Card> cards)
     {
-        if (cards.Count != 5)
-            throw new ArgumentOutOfRangeException($"Card evauation requires exactly 5 cards. Got: {cards.Count}.");
-
-
         var rankCounts = Enum.GetValues<ECardRank>().ToDictionary(r => r, _ => 0);
         var suitCounts = Enum.GetValues<ECardSuit>().ToDictionary(s => s, _ => 0);
         int rankMask = 0;
@@ -86,7 +82,7 @@ public sealed class PokerAppService
         {
             rankCounts[card.Rank]++;
             suitCounts[card.Suit]++;
-            rankMask |= 1 << ((int)card.Rank - 2); // -2 is because of the Enum Rank Two, which is the first element starts at 2.
+            rankMask |= 1 << ((int)card.Rank - 2); // -2 is because of the Enum-Rank-Two, which is the first element, but starts at 2 istead of 0.
         }
 
 
