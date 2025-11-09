@@ -166,7 +166,8 @@ public sealed class YoloDetectionHandler
         List<CardPrediction> predictions = yoloResult
             .Select(d => new CardPrediction(
                 ParseLabel(d.Name.Name),
-                d.Confidence
+                d.Confidence,
+                d.Bounds
             ))
             .ToList();
         

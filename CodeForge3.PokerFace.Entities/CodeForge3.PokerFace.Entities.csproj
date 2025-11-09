@@ -4,4 +4,8 @@
     <ProjectReference Include="..\CodeForge3.PokerFace.Enums\CodeForge3.PokerFace.Enums.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp" />
+  </ItemGroup>
+
 </Project>
