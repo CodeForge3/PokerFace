@@ -5,7 +5,12 @@
 
 <MudPaper Class="mt-4 pa-6">
     <MudText Typo="Typo.h5" GutterBottom="true">Upload a poker card image.</MudText>
-    <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg" FilesChanged="OnFileSelected">
+    
+    <MudSwitch @bind-Value="_showBoundingBoxes" Color="Color.Primary" Class="mt-4">
+        Show bounding boxes
+    </MudSwitch>
+    
+    <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg" FilesChanged="OnFileSelected" Class="mt-4">
         <ActivatorContent>
             <MudFab Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Image" Label="Load picture" />
         </ActivatorContent>
@@ -123,6 +128,11 @@ else if (_evaluatedCombination is not null)
     /// Base64 string used for displaying the uploaded image.
     /// </summary>
     private string? _imagePreview;
+    
+    /// <summary>
+    /// Should the bounding boxes be shown?
+    /// </summary>
+    private bool _showBoundingBoxes = true;
     
     /// <summary>
     /// Selects the image to upload to the server for processing.
