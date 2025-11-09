@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using CodeForge3.PokerFace.Enums.Extensions
 @inject IPokerAppService PokerAppService
 
 <PageTitle>Home</PageTitle>
@@ -21,6 +20,14 @@
             }
         </SelectedTemplate>
     </MudFileUpload>
+    
+    @if (!string.IsNullOrEmpty(_imagePreview))
+    {
+        <div class="mt-4">
+            <MudImage Src="@_imagePreview" Alt="Uploaded Image Preview" Class="rounded-lg" Width="300" Elevation="3" />
+        </div>
+    }
+    
     <MudButton Disabled="@(_selectedFile is null || _isProcessing ||_isEvaluating)" OnClick="@(() => ProcessFile())"
         Color="Color.Primary" Variant="Variant.Filled" Class="mt-2">
         @if (_isProcessing || _isEvaluating)
@@ -105,7 +112,7 @@ else if (_evaluatedCombination is not null)
     /// <summary>
     /// The evaluated card combination of the predicted cards.
     /// </summary>
-    private Enums.ECardCombination? _evaluatedCombination;
+    private ECardCombination? _evaluatedCombination;
 
     /// <summary>
     /// Error message of combination evaluation. Occurs when more than five or duplicated cards are detected.
@@ -113,15 +120,36 @@ else if (_evaluatedCombination is not null)
     private string? _evaluationErrorMessage;
 
     /// <summary>
+    /// Base64 string used for displaying the uploaded image.
+    /// </summary>
+    private string? _imagePreview;
+    
+    /// <summary>
     /// Selects the image to upload to the server for processing.
     /// </summary>
     /// <param name="file">The file to upload.</param>
-    private void OnFileSelected(IBrowserFile? file)
+    private async Task OnFileSelected(IBrowserFile? file)
     {
         _selectedFile = file;
         _predictions = null;
         _evaluationErrorMessage = null;
         _evaluatedCombination = null;
+        
+        if (file is not null)
+        {
+            await using Stream stream = file.OpenReadStream(PokerFaceConfiguration.MaxUploadFileSize);
+            using MemoryStream ms = new();
+            await stream.CopyToAsync(ms);
+            byte[] bytes = ms.ToArray();
+            string base64 = Convert.ToBase64String(bytes);
+            _imagePreview = $"data:{file.ContentType};base64,{base64}";
+        }
+        else
+        {
+            _imagePreview = null;
+        }
+        
+        StateHasChanged();
     }
 
     /// <summary>
