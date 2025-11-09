@@ -63,11 +63,11 @@
     </MudPaper>
 }
 
-@if (_evaluation_error_message is not null)
+@if (_evaluationErrorMessage is not null)
 {
     <MudPaper Class="mt-4 pa-6">
         <MudText Typo="Typo.h6" Color="Color.Error" Align="Align.Center">
-            @_evaluation_error_message
+            @_evaluationErrorMessage
         </MudText>
     </MudPaper>
 }
@@ -110,7 +110,7 @@ else if (_evaluatedCombination is not null)
     /// <summary>
     /// Error message of combination evaluation. Occurs when more than five or duplicated cards are detected.
     /// </summary>
-    private string? _evaluation_error_message;
+    private string? _evaluationErrorMessage;
 
     /// <summary>
     /// Selects the image to upload to the server for processing.
@@ -120,6 +120,8 @@ else if (_evaluatedCombination is not null)
     {
         _selectedFile = file;
         _predictions = null;
+        _evaluationErrorMessage = null;
+        _evaluatedCombination = null;
     }
 
     /// <summary>
@@ -144,9 +146,6 @@ else if (_evaluatedCombination is not null)
     /// </summary>
     private async Task EvaluateCardsCombination()
     {
-        _evaluation_error_message = null;
-        _evaluatedCombination = null;
-
         if (_predictions is null)
         {
             Console.WriteLine("Error: predictions empty.");
@@ -163,11 +162,11 @@ else if (_evaluatedCombination is not null)
         }
         catch (ArgumentOutOfRangeException e)
         {
-            _evaluation_error_message = e.Message;
+            _evaluationErrorMessage = e.Message;
         }
         catch (ArgumentException e)
         {
-            _evaluation_error_message = e.Message;
+            _evaluationErrorMessage = e.Message;
         }
 
         _isEvaluating = false;
