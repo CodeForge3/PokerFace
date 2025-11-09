@@ -63,11 +63,19 @@
     </MudPaper>
 }
 
-@if (_evaluatedCombination is not null)
+@if (_evaluationErrorMessage is not null)
+{
+    <MudPaper Class="mt-4 pa-6">
+        <MudText Typo="Typo.h6" Color="Color.Error" Align="Align.Center">
+            @_evaluationErrorMessage
+        </MudText>
+    </MudPaper>
+}
+else if (_evaluatedCombination is not null)
 {
     <MudPaper Class="mt-4 pa-6">
         <MudText Typo="Typo.h6" Align="Align.Center">
-            The combination of the detected cards is <span style="text-decoration: underline;">@_evaluatedCombination.GetDisplayName()</span>.
+            Combination evaluation result: <span style="text-decoration: underline;">@_evaluatedCombination.GetDisplayName()</span>
         </MudText>
     </MudPaper>
 }
@@ -100,6 +108,11 @@
     private Enums.ECardCombination? _evaluatedCombination;
 
     /// <summary>
+    /// Error message of combination evaluation. Occurs when more than five or duplicated cards are detected.
+    /// </summary>
+    private string? _evaluationErrorMessage;
+
+    /// <summary>
     /// Selects the image to upload to the server for processing.
     /// </summary>
     /// <param name="file">The file to upload.</param>
@@ -107,6 +120,8 @@
     {
         _selectedFile = file;
         _predictions = null;
+        _evaluationErrorMessage = null;
+        _evaluatedCombination = null;
     }
 
     /// <summary>
@@ -137,17 +152,22 @@
             return;
         }
 
-        if (_predictions.Count != 5)
-        {
-            Console.WriteLine($"Error: predicted cards count is not 5. (Cards cound is: {_predictions.Count})");
-            return;
-        }
-
         _isEvaluating = true;
 
-        _evaluatedCombination = await Task.Run(() =>
-            PokerAppService.EvaluateCombination(_predictions.Select(p => p.Card).ToList())
-        );
+        try
+        {
+            _evaluatedCombination = await Task.Run(() =>
+                PokerAppService.EvaluateCombination(_predictions.Select(p => p.Card).ToList())
+            );
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            _evaluationErrorMessage = e.Message;
+        }
+        catch (ArgumentException e)
+        {
+            _evaluationErrorMessage = e.Message;
+        }
 
         _isEvaluating = false;
     }
