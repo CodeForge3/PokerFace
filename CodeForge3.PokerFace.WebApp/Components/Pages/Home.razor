@@ -174,9 +174,31 @@ else if (_evaluatedCombination is not null)
 
         _isProcessing = true;
         _predictions = await PokerAppService.PredictCardsAsync(_selectedFile);
-        _isProcessing = false;
-
+        
+        await using Stream stream = _selectedFile.OpenReadStream(PokerFaceConfiguration.MaxUploadFileSize);
+        using Image<Rgba32> image = await Image.LoadAsync<Rgba32>(stream);
+        
+        if (_showBoundingBoxes)
+        {
+            SixColor boxColor = SixColor.Red;
+            const float boxThickness = 2f;
+            
+            image.Mutate(ctx =>
+            {
+                foreach (CardPrediction prediction in _predictions)
+                {
+                    ctx.Draw(boxColor, boxThickness, prediction.Bounds);
+                }
+            });
+        }
+        
+        using MemoryStream ms = new();
+        await image.SaveAsPngAsync(ms);
+        string base64 = Convert.ToBase64String(ms.ToArray());
+        _imagePreview = $"data:image/png;base64,{base64}";
+        
         await EvaluateCardsCombination();
+        _isProcessing = false;
     }
 
     /// <summary>
