@@ -142,4 +142,24 @@ public sealed class PokerAppService
     }
 
     #endregion
+    
+    #region GetModelList
+    
+    /// <inheritdoc />
+    public IReadOnlyList<string> GetModelList()
+    {
+        return _yoloDetectionHandler.GetModelList();
+    }
+    
+    #endregion
+    
+    #region SelectModel
+    
+    /// <inheritdoc />
+    public void SelectModel(string modelName)
+    {
+        _yoloDetectionHandler.SelectModel(modelName);
+    }
+    
+    #endregion
 }
