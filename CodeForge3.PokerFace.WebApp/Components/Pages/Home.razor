@@ -5,7 +5,12 @@
 
 <MudPaper Class="mt-4 pa-6">
     <MudText Typo="Typo.h5" GutterBottom="true">Upload a poker card image.</MudText>
-    <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg" FilesChanged="OnFileSelected">
+    
+    <MudSwitch @bind-Value="_showBoundingBoxes" Color="Color.Primary" Class="mt-4">
+        Show bounding boxes
+    </MudSwitch>
+    
+    <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg" FilesChanged="OnFileSelected" Class="mt-4">
         <ActivatorContent>
             <MudFab Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Image" Label="Load picture" />
         </ActivatorContent>
@@ -125,6 +130,11 @@ else if (_evaluatedCombination is not null)
     private string? _imagePreview;
     
     /// <summary>
+    /// Should the bounding boxes be shown?
+    /// </summary>
+    private bool _showBoundingBoxes = true;
+    
+    /// <summary>
     /// Selects the image to upload to the server for processing.
     /// </summary>
     /// <param name="file">The file to upload.</param>
@@ -164,9 +174,31 @@ else if (_evaluatedCombination is not null)
 
         _isProcessing = true;
         _predictions = await PokerAppService.PredictCardsAsync(_selectedFile);
-        _isProcessing = false;
-
+        
+        await using Stream stream = _selectedFile.OpenReadStream(PokerFaceConfiguration.MaxUploadFileSize);
+        using Image<Rgba32> image = await Image.LoadAsync<Rgba32>(stream);
+        
+        if (_showBoundingBoxes)
+        {
+            SixColor boxColor = SixColor.Red;
+            const float boxThickness = 2f;
+            
+            image.Mutate(ctx =>
+            {
+                foreach (CardPrediction prediction in _predictions)
+                {
+                    ctx.Draw(boxColor, boxThickness, prediction.Bounds);
+                }
+            });
+        }
+        
+        using MemoryStream ms = new();
+        await image.SaveAsPngAsync(ms);
+        string base64 = Convert.ToBase64String(ms.ToArray());
+        _imagePreview = $"data:image/png;base64,{base64}";
+        
         await EvaluateCardsCombination();
+        _isProcessing = false;
     }
 
     /// <summary>
