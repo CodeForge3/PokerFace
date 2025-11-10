@@ -232,7 +232,7 @@ else if (_evaluatedCombination is not null)
     /// </summary>
     private async Task EvaluateCardsCombination()
     {
-        if (_predictions is null)
+        if (_predictions is null || _predictions.Count == 0)
         {
             Console.WriteLine("Error: predictions empty.");
             return;
