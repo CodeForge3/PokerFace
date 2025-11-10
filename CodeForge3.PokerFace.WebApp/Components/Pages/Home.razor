@@ -6,6 +6,13 @@
 <MudPaper Class="mt-4 pa-6">
     <MudText Typo="Typo.h5" GutterBottom="true">Upload a poker card image.</MudText>
     
+    <MudSelect @bind-Value="_selectedModel" FitContent="true">
+        @foreach (string modelName in PokerAppService.GetModelList())
+        {
+            <MudSelectItem Value="modelName">@modelName</MudSelectItem>
+        }
+    </MudSelect>
+    
     <MudSwitch @bind-Value="_showBoundingBoxes" Color="Color.Primary" Class="mt-4">
         Show bounding boxes
     </MudSwitch>
@@ -135,6 +142,11 @@ else if (_evaluatedCombination is not null)
     private bool _showBoundingBoxes = true;
     
     /// <summary>
+    /// The name of the selected model.
+    /// </summary>
+    private string _selectedModel = PokerFaceConfiguration.CurrentYoloModel;
+    
+    /// <summary>
     /// Selects the image to upload to the server for processing.
     /// </summary>
     /// <param name="file">The file to upload.</param>
@@ -173,6 +185,8 @@ else if (_evaluatedCombination is not null)
         }
 
         _isProcessing = true;
+        
+        PokerAppService.SelectModel(_selectedModel);
         _predictions = await PokerAppService.PredictCardsAsync(_selectedFile);
         
         await using Stream stream = _selectedFile.OpenReadStream(PokerFaceConfiguration.MaxUploadFileSize);
