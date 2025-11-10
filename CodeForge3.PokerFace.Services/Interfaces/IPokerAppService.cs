@@ -1,5 +1,6 @@
 ﻿using CodeForge3.PokerFace.Entities;
 using CodeForge3.PokerFace.Enums;
+using CodeForge3.PokerFace.MachineLearning.Interfaces;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace CodeForge3.PokerFace.Services.Interfaces;
@@ -31,4 +32,10 @@ public interface IPokerAppService
     /// If two or more cards are the same.
     /// </exception>
     ECardCombination EvaluateCombination(IReadOnlyList<Card> cards);
+    
+    /// <inheritdoc cref="IYoloDetectionHandler.GetModelList" />
+    IReadOnlyList<string> GetModelList();
+    
+    /// <inheritdoc cref="IYoloDetectionHandler.SelectModel" />
+    void SelectModel(string modelName);
 }

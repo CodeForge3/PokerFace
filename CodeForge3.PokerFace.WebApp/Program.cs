@@ -8,7 +8,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddConfiguration(PokerFaceConfiguration.ConfigurationRoot);
 
-builder.Services.AddYoloDetectionHandler(PokerFaceConfiguration.CurrentYoloModel);
+builder.Services.AddYoloDetectionHandler();
 
 builder.Services.AddPokerAppService();
 
