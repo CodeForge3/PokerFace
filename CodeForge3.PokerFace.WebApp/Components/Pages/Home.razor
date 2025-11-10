@@ -7,7 +7,7 @@
     <MudText Typo="Typo.h5" GutterBottom="true">Upload a poker card image.</MudText>
     
     <MudSelect @bind-Value="_selectedModel" FitContent="true">
-        @foreach (string modelName in PokerAppService.GetModelList())
+        @foreach (string modelName in _availableModels)
         {
             <MudSelectItem Value="modelName">@modelName</MudSelectItem>
         }
@@ -145,6 +145,18 @@ else if (_evaluatedCombination is not null)
     /// The name of the selected model.
     /// </summary>
     private string _selectedModel = PokerFaceConfiguration.CurrentYoloModel;
+    
+    /// <summary>
+    /// The list of available model names.
+    /// </summary>
+    private IReadOnlyList<string> _availableModels = [];
+    
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        _availableModels = PokerAppService.GetModelList();
+        base.OnInitialized();
+    }
     
     /// <summary>
     /// Selects the image to upload to the server for processing.
