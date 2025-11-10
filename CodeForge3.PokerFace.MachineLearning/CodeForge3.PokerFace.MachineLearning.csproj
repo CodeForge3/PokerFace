@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CodeForge3.PokerFace.Configurations\CodeForge3.PokerFace.Configurations.csproj" />
     <ProjectReference Include="..\CodeForge3.PokerFace.Entities\CodeForge3.PokerFace.Entities.csproj" />
   </ItemGroup>
 
