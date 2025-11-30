@@ -1,4 +1,6 @@
-﻿namespace CodeForge3.PokerFace.Entities;
+﻿using SixLabors.ImageSharp;
+
+namespace CodeForge3.PokerFace.Entities;
 
 /// <summary>
 /// Represents a regular playing card prediction.
@@ -12,10 +14,12 @@ public readonly struct CardPrediction
     /// </summary>
     /// <param name="card">The card predicted.</param>
     /// <param name="probability">The probability of the prediction being correct.</param>
-    public CardPrediction(Card card, float probability)
+    /// <param name="bounds">The bounding box of the prediction.</param>
+    public CardPrediction(Card card, float probability, Rectangle bounds)
     {
         Card = card;
         Probability = probability;
+        Bounds = bounds;
     }
     
     #endregion
@@ -31,6 +35,11 @@ public readonly struct CardPrediction
     /// The probability of the prediction being correct.
     /// </summary>
     public float Probability { get; }
+    
+    /// <summary>
+    /// The bounding box of the prediction.
+    /// </summary>
+    public Rectangle Bounds { get; }
     
     #endregion
     

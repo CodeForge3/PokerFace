@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using CodeForge3.PokerFace.Configurations;
 using CodeForge3.PokerFace.Entities;
 using CodeForge3.PokerFace.Enums;
 using CodeForge3.PokerFace.MachineLearning.Interfaces;
@@ -28,6 +29,11 @@ public sealed class YoloDetectionHandler
     private const string InvalidLabelFormatMessage = "The '{0}' label format is invalid.";
     
     /// <summary>
+    /// The pattern used to match model files.
+    /// </summary>
+    private const string ModelFilePattern = "*.onnx";
+    
+    /// <summary>
     /// The name of the folder containing the models.
     /// </summary>
     private const string ModelsFolder = "Models";
@@ -49,7 +55,7 @@ public sealed class YoloDetectionHandler
     /// <summary>
     /// The field containing the Yolo predictor.
     /// </summary>
-    private readonly YoloPredictor _yoloPredictor;
+    private YoloPredictor? _yoloPredictor;
     
     /// <summary>
     /// The field containing the flag indicating whether
@@ -66,12 +72,10 @@ public sealed class YoloDetectionHandler
     /// using the specified model name.
     /// </summary>
     /// <param name="logger">The logger for the class.</param>
-    /// <param name="modelName">The name of the model to use.</param>
-    public YoloDetectionHandler(ILogger<YoloDetectionHandler> logger, string modelName)
+    public YoloDetectionHandler(ILogger<YoloDetectionHandler> logger)
     {
-        string path = Path.Combine(AssemblyDirectory.Value, ModelsFolder, modelName);
         _logger = logger;
-        _yoloPredictor = new(path);
+        _yoloPredictor = null;
         _isDisposed = false;
     }
     
@@ -161,12 +165,18 @@ public sealed class YoloDetectionHandler
     {
         _logger.LogDebug("Starting image detection with Yolo.");
         
-        YoloResult<Detection> yoloResult = await _yoloPredictor.DetectAsync(imageBytes);
+        if (_yoloPredictor is null)
+        {
+            SelectModel(PokerFaceConfiguration.CurrentYoloModel);
+        }
+        
+        YoloResult<Detection> yoloResult = await _yoloPredictor!.DetectAsync(imageBytes);
         
         List<CardPrediction> predictions = yoloResult
             .Select(d => new CardPrediction(
                 ParseLabel(d.Name.Name),
-                d.Confidence
+                d.Confidence,
+                d.Bounds
             ))
             .ToList();
         
@@ -186,9 +196,50 @@ public sealed class YoloDetectionHandler
             return;
         }
         
-        _yoloPredictor.Dispose();
+        _yoloPredictor?.Dispose();
         
         _isDisposed = true;
+    }
+    
+    #endregion
+    
+    #region GetModelList
+    
+    /// <inheritdoc />
+    public IReadOnlyList<string> GetModelList()
+    {
+        _logger.LogDebug("Starting model list retrieval.");
+        
+        string path = Path.Combine(AssemblyDirectory.Value, ModelsFolder);
+        
+        string[] modelNames = Directory.GetFiles(path, ModelFilePattern);
+        
+        List<string> names = modelNames.Select(Path.GetFileName).ToList()!;
+        
+        _logger.LogInformation("{Count} models found.", names.Count);
+        return names;
+    }
+    
+    #endregion
+    
+    #region SelectModel
+    
+    /// <inheritdoc />
+    public void SelectModel(string modelName)
+    {
+        _logger.LogDebug("Starting model selection.");
+        
+        string path = Path.Combine(AssemblyDirectory.Value, ModelsFolder, modelName);
+        
+        if (!File.Exists(path))
+        {
+            throw new ArgumentException("The model file does not exist.");
+        }
+        
+        _yoloPredictor?.Dispose();
+        _yoloPredictor = new(path);
+        
+        _logger.LogInformation("{ModelName} model selected.", modelName);
     }
     
     #endregion

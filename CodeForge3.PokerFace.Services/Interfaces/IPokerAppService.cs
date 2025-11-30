@@ -1,4 +1,6 @@
 ﻿using CodeForge3.PokerFace.Entities;
+using CodeForge3.PokerFace.Enums;
+using CodeForge3.PokerFace.MachineLearning.Interfaces;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace CodeForge3.PokerFace.Services.Interfaces;
@@ -17,4 +19,23 @@ public interface IPokerAppService
     /// If the uploaded image file is <see langword="null" />.
     /// </exception>
     Task<IReadOnlyList<CardPrediction>> PredictCardsAsync(IBrowserFile? file);
+
+    /// <summary>
+    /// Evaluate the given cards as a poker card combination.
+    /// </summary>
+    /// <param name="cards">List of the cards.</param>
+    /// <returns>Enumeration of the strongest card combination of the cards.</returns>
+    /// <exception cref="ArgumentException">
+    /// If more than five cards given.
+    /// </exception>
+    /// /// <exception cref="ArgumentException">
+    /// If two or more cards are the same.
+    /// </exception>
+    ECardCombination EvaluateCombination(IReadOnlyList<Card> cards);
+    
+    /// <inheritdoc cref="IYoloDetectionHandler.GetModelList" />
+    IReadOnlyList<string> GetModelList();
+    
+    /// <inheritdoc cref="IYoloDetectionHandler.SelectModel" />
+    void SelectModel(string modelName);
 }

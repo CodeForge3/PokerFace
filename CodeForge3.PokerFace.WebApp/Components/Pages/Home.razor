@@ -5,7 +5,19 @@
 
 <MudPaper Class="mt-4 pa-6">
     <MudText Typo="Typo.h5" GutterBottom="true">Upload a poker card image.</MudText>
-    <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg" FilesChanged="OnFileSelected">
+    
+    <MudSelect @bind-Value="_selectedModel" FitContent="true">
+        @foreach (string modelName in _availableModels)
+        {
+            <MudSelectItem Value="modelName">@modelName</MudSelectItem>
+        }
+    </MudSelect>
+    
+    <MudSwitch @bind-Value="_showBoundingBoxes" Color="Color.Primary" Class="mt-4 d-inline-flex align-items-center">
+        Show bounding boxes
+    </MudSwitch>
+    
+    <MudFileUpload T="IBrowserFile" Accept=".png, .jpg, .jpeg" FilesChanged="OnFileSelected" Class="mt-4" Style="width: fit-content;">
         <ActivatorContent>
             <MudFab Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Image" Label="Load picture" />
         </ActivatorContent>
@@ -20,9 +32,17 @@
             }
         </SelectedTemplate>
     </MudFileUpload>
-    <MudButton Disabled="@(_selectedFile is null || _isProcessing)" OnClick="@(() => ProcessFile())"
+    
+    @if (!string.IsNullOrEmpty(_imagePreview))
+    {
+        <div class="mt-4">
+            <MudImage Src="@_imagePreview" Alt="Uploaded Image Preview" Class="rounded-lg" Width="300" Elevation="3" />
+        </div>
+    }
+    
+    <MudButton Disabled="@(_selectedFile is null || _isProcessing ||_isEvaluating)" OnClick="@(() => ProcessFile())"
         Color="Color.Primary" Variant="Variant.Filled" Class="mt-2">
-        @if (_isProcessing)
+        @if (_isProcessing || _isEvaluating)
         {
             <MudProgressCircular Indeterminate="true" Size="Size.Small" Class="mr-2" />
             <MudText>Processing...</MudText>
@@ -62,33 +82,110 @@
     </MudPaper>
 }
 
+@if (_evaluationErrorMessage is not null)
+{
+    <MudPaper Class="mt-4 pa-6">
+        <MudText Typo="Typo.h6" Color="Color.Error" Align="Align.Center">
+            @_evaluationErrorMessage
+        </MudText>
+    </MudPaper>
+}
+else if (_evaluatedCombination is not null)
+{
+    <MudPaper Class="mt-4 pa-6">
+        <MudText Typo="Typo.h6" Align="Align.Center">
+            Combination evaluation result: <span style="text-decoration: underline;">@_evaluatedCombination.GetDisplayName()</span>
+        </MudText>
+    </MudPaper>
+}
+
 @code
 {
     /// <summary>
     /// Is the image being processed?
     /// </summary>
     private bool _isProcessing;
-    
+
+    /// <summary>
+    /// True if cards are being evaluated.
+    /// </summary>
+    private bool _isEvaluating;
+
     /// <summary>
     /// The predictions for the current image.
     /// </summary>
     private IReadOnlyList<CardPrediction>? _predictions;
-    
+
     /// <summary>
     /// The currently selected file.
     /// </summary>
     private IBrowserFile? _selectedFile;
-    
+
+    /// <summary>
+    /// The evaluated card combination of the predicted cards.
+    /// </summary>
+    private ECardCombination? _evaluatedCombination;
+
+    /// <summary>
+    /// Error message of combination evaluation. Occurs when more than five or duplicated cards are detected.
+    /// </summary>
+    private string? _evaluationErrorMessage;
+
+    /// <summary>
+    /// Base64 string used for displaying the uploaded image.
+    /// </summary>
+    private string? _imagePreview;
+
+    /// <summary>
+    /// Should the bounding boxes be shown?
+    /// </summary>
+    private bool _showBoundingBoxes = true;
+
+    /// <summary>
+    /// The name of the selected model.
+    /// </summary>
+    private string _selectedModel = PokerFaceConfiguration.CurrentYoloModel;
+
+    /// <summary>
+    /// The list of available model names.
+    /// </summary>
+    private IReadOnlyList<string> _availableModels = [];
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        _availableModels = PokerAppService.GetModelList();
+        base.OnInitialized();
+    }
+
     /// <summary>
     /// Selects the image to upload to the server for processing.
     /// </summary>
     /// <param name="file">The file to upload.</param>
-    private void OnFileSelected(IBrowserFile? file)
+    private async Task OnFileSelected(IBrowserFile? file)
     {
         _selectedFile = file;
         _predictions = null;
+        _evaluationErrorMessage = null;
+        _evaluatedCombination = null;
+
+        if (file is not null)
+        {
+            await using Stream stream = file.OpenReadStream(PokerFaceConfiguration.MaxUploadFileSize);
+            using MemoryStream ms = new();
+            await stream.CopyToAsync(ms);
+            byte[] bytes = ms.ToArray();
+            string base64 = Convert.ToBase64String(bytes);
+            _imagePreview = $"data:{file.ContentType};base64,{base64}";
+        }
+        else
+        {
+            _imagePreview = null;
+        }
+
+        StateHasChanged();
     }
-    
+
     /// <summary>
     /// Processes the uploaded image.
     /// </summary>
@@ -98,9 +195,67 @@
         {
             return;
         }
-        
+
         _isProcessing = true;
+
+        PokerAppService.SelectModel(_selectedModel);
         _predictions = await PokerAppService.PredictCardsAsync(_selectedFile);
+
+        await using Stream stream = _selectedFile.OpenReadStream(PokerFaceConfiguration.MaxUploadFileSize);
+        using Image<Rgba32> image = await Image.LoadAsync<Rgba32>(stream);
+
+        if (_showBoundingBoxes)
+        {
+            SixColor boxColor = SixColor.Red;
+            const float boxThickness = 2f;
+
+            image.Mutate(ctx =>
+            {
+                foreach (CardPrediction prediction in _predictions)
+                {
+                    ctx.Draw(boxColor, boxThickness, prediction.Bounds);
+                }
+            });
+        }
+
+        using MemoryStream ms = new();
+        await image.SaveAsPngAsync(ms);
+        string base64 = Convert.ToBase64String(ms.ToArray());
+        _imagePreview = $"data:image/png;base64,{base64}";
+
+        await EvaluateCardsCombination();
         _isProcessing = false;
+    }
+
+    /// <summary>
+    /// Evaluates the combination of the predicted cards.
+    /// </summary>
+    private async Task EvaluateCardsCombination()
+    {
+        if (_predictions is null || _predictions.Count == 0)
+        {
+            Console.WriteLine("Error: predictions empty. Skip evaluating combination.");
+            _evaluatedCombination = null;
+            return;
+        }
+
+        _isEvaluating = true;
+
+        try
+        {
+            _evaluatedCombination = await Task.Run(() =>
+                PokerAppService.EvaluateCombination(_predictions.Select(p => p.Card).ToList())
+            );
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            _evaluationErrorMessage = e.Message;
+        }
+        catch (ArgumentException e)
+        {
+            _evaluationErrorMessage = e.Message;
+        }
+
+        _isEvaluating = false;
     }
 }

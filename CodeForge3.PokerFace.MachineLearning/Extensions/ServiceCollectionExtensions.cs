@@ -15,15 +15,12 @@ public static class ServiceCollectionExtensions
     /// Add the <see cref="IYoloDetectionHandler" /> to the dependency injection container.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection" /> instance.</param>
-    /// <param name="modelName">The name of the model to be used by the <see cref="IYoloDetectionHandler" />.</param>
     /// <returns>The <see cref="IServiceCollection" /> instance for chaining.</returns>
-    public static IServiceCollection AddYoloDetectionHandler(this IServiceCollection services,
-        string modelName)
+    public static IServiceCollection AddYoloDetectionHandler(this IServiceCollection services)
     {
         services.AddScoped<IYoloDetectionHandler>(sp =>
             new YoloDetectionHandler(
-                sp.GetRequiredService<ILogger<YoloDetectionHandler>>(),
-                modelName
+                sp.GetRequiredService<ILogger<YoloDetectionHandler>>()
             )
         );
         return services;
